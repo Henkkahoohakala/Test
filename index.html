@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toimiston Sijaintioptimoija</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Toimiston Sijaintioptimoija</h1>
+            <p class="subtitle">Määritä optimaalinen toimiston sijainti henkilökunnan osoitteiden perusteella</p>
+        </header>
+
+        <div class="main-layout">
+            <aside class="sidebar">
+                <section class="input-section">
+                    <h2>Lisää henkilökuntaa</h2>
+                    <form id="employee-form">
+                        <div class="form-group">
+                            <label for="name">Nimi</label>
+                            <input type="text" id="name" placeholder="Esim. Matti Meikäläinen" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Osoite tai postinumero</label>
+                            <input type="text" id="address" placeholder="Esim. 00100 Helsinki" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="weight">Painoarvo (työpäivät/vko)</label>
+                            <input type="number" id="weight" min="1" max="7" value="5" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Lisää</button>
+                    </form>
+                </section>
+
+                <section class="import-section">
+                    <h2>Tuo / Vie tiedot</h2>
+                    <div class="import-export-buttons">
+                        <button id="import-csv-btn" class="btn btn-secondary">Tuo CSV</button>
+                        <button id="export-csv-btn" class="btn btn-secondary">Vie CSV</button>
+                        <button id="load-example-btn" class="btn btn-secondary">Lataa esimerkki</button>
+                    </div>
+                    <input type="file" id="csv-file-input" accept=".csv" hidden />
+                    <p class="help-text">CSV-muoto: nimi;osoite;painoarvo</p>
+                </section>
+
+                <section class="employee-list-section">
+                    <div class="list-header">
+                        <h2>Henkilökunta (<span id="employee-count">0</span>)</h2>
+                        <button id="clear-all-btn" class="btn btn-danger btn-small">Tyhjennä</button>
+                    </div>
+                    <ul id="employee-list"></ul>
+                </section>
+
+                <section class="calculate-section">
+                    <button id="calculate-btn" class="btn btn-primary btn-large" disabled>
+                        Laske optimaalinen sijainti
+                    </button>
+                    <div class="method-select">
+                        <label>
+                            <input type="radio" name="method" value="median" checked />
+                            Geometrinen mediaani (minimoi kokonaismatka)
+                        </label>
+                        <label>
+                            <input type="radio" name="method" value="centroid" />
+                            Painotettu keskipiste
+                        </label>
+                        <label>
+                            <input type="radio" name="method" value="both" />
+                            Molemmat
+                        </label>
+                    </div>
+                </section>
+            </aside>
+
+            <main class="map-area">
+                <div id="map"></div>
+                <div id="results-panel" class="results-panel hidden">
+                    <button id="close-results" class="close-btn">&times;</button>
+                    <h2>Tulokset</h2>
+                    <div id="results-content"></div>
+                </div>
+            </main>
+        </div>
+
+        <div id="status-bar" class="status-bar">Valmis</div>
+    </div>
+
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p id="loading-text">Geokoodataan osoitteita...</p>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
