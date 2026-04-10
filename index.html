@@ -5,33 +5,468 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Toimiston Sijaintioptimoija</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="styles.css" />
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --danger: #dc2626;
+    --danger-hover: #b91c1c;
+    --success: #16a34a;
+    --bg: #f8fafc;
+    --sidebar-bg: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --radius: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+header {
+    background: var(--primary);
+    color: white;
+    padding: 12px 16px;
+    box-shadow: var(--shadow);
+    z-index: 10;
+}
+
+header h1 {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.subtitle {
+    font-size: 0.78rem;
+    opacity: 0.85;
+    margin-top: 2px;
+}
+
+.main-layout {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Sidebar / Controls */
+.sidebar {
+    background: var(--sidebar-bg);
+    border-bottom: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 55vh;
+}
+
+.sidebar section {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 14px;
+}
+
+.sidebar section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.sidebar h2 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text);
+}
+
+/* Form */
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 500;
+    margin-bottom: 3px;
+    color: var(--text-secondary);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 16px; /* prevents iOS zoom */
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+}
+
+.btn-primary:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background: #f1f5f9;
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-small {
+    padding: 5px 10px;
+    font-size: 0.78rem;
+}
+
+.btn-large {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+}
+
+/* Import/Export */
+.import-export-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.help-text {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    margin-top: 6px;
+}
+
+/* Employee list */
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.list-header h2 {
+    margin-bottom: 0;
+}
+
+#employee-list {
+    list-style: none;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+#employee-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: var(--radius);
+    margin-bottom: 4px;
+    background: #f8fafc;
+    font-size: 0.82rem;
+}
+
+.employee-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.employee-name {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.employee-address {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.employee-weight {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    margin-left: 8px;
+    white-space: nowrap;
+}
+
+.remove-btn {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 4px 8px;
+    margin-left: 4px;
+    border-radius: 4px;
+}
+
+/* Method select */
+.method-select {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.method-select label {
+    font-size: 0.82rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+/* Map */
+.map-area {
+    flex: 1;
+    position: relative;
+    min-height: 300px;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+/* Results Panel */
+.results-panel {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    padding: 16px;
+    max-height: 60%;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.results-panel.hidden {
+    display: none;
+}
+
+.results-panel h2 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 4px 8px;
+}
+
+.result-block {
+    margin-bottom: 14px;
+    padding: 12px;
+    background: #f0f9ff;
+    border-radius: var(--radius);
+    border-left: 4px solid var(--primary);
+}
+
+.result-block.centroid-result {
+    background: #fefce8;
+    border-left-color: #ca8a04;
+}
+
+.result-block h3 {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.result-stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    margin-bottom: 4px;
+}
+
+.result-stat .label {
+    color: var(--text-secondary);
+}
+
+.result-stat .value {
+    font-weight: 600;
+}
+
+.distance-list {
+    margin-top: 10px;
+}
+
+.distance-list h4 {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.distance-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    padding: 3px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* Status bar */
+.status-bar {
+    background: #1e293b;
+    color: #94a3b8;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+}
+
+/* Loading overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loading-overlay.hidden {
+    display: none;
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #e2e8f0;
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-overlay p {
+    color: white;
+    margin-top: 16px;
+    font-size: 1rem;
+}
+
+/* Desktop layout */
+@media (min-width: 769px) {
+    .main-layout {
+        flex-direction: row;
+    }
+    .sidebar {
+        width: 380px;
+        min-width: 380px;
+        max-height: none;
+        border-bottom: none;
+        border-right: 1px solid var(--border);
+    }
+    .results-panel {
+        top: 10px;
+        right: 10px;
+        bottom: auto;
+        left: auto;
+        max-width: 360px;
+        max-height: calc(100% - 20px);
+    }
+    header {
+        padding: 16px 24px;
+    }
+    header h1 {
+        font-size: 1.4rem;
+    }
+}
+    </style>
 </head>
 <body>
     <div class="app-container">
         <header>
             <h1>Toimiston Sijaintioptimoija</h1>
-            <p class="subtitle">Määritä optimaalinen toimiston sijainti henkilökunnan osoitteiden perusteella</p>
+            <p class="subtitle">Optimaalinen sijainti henkilokunnan osoitteiden perusteella</p>
         </header>
 
         <div class="main-layout">
             <aside class="sidebar">
                 <section class="input-section">
-                    <h2>Lisää henkilökuntaa</h2>
+                    <h2>Lisaa henkilokuntaa</h2>
                     <form id="employee-form">
                         <div class="form-group">
                             <label for="name">Nimi</label>
-                            <input type="text" id="name" placeholder="Esim. Matti Meikäläinen" required />
+                            <input type="text" id="name" placeholder="Esim. Matti Meikalainen" required />
                         </div>
                         <div class="form-group">
                             <label for="address">Osoite tai postinumero</label>
                             <input type="text" id="address" placeholder="Esim. 00100 Helsinki" required />
                         </div>
                         <div class="form-group">
-                            <label for="weight">Painoarvo (työpäivät/vko)</label>
+                            <label for="weight">Painoarvo (tyopaivat/vko)</label>
                             <input type="number" id="weight" min="1" max="7" value="5" />
                         </div>
-                        <button type="submit" class="btn btn-primary">Lisää</button>
+                        <button type="submit" class="btn btn-primary">Lisaa</button>
                     </form>
                 </section>
 
@@ -48,8 +483,8 @@
 
                 <section class="employee-list-section">
                     <div class="list-header">
-                        <h2>Henkilökunta (<span id="employee-count">0</span>)</h2>
-                        <button id="clear-all-btn" class="btn btn-danger btn-small">Tyhjennä</button>
+                        <h2>Henkilokunta (<span id="employee-count">0</span>)</h2>
+                        <button id="clear-all-btn" class="btn btn-danger btn-small">Tyhjenna</button>
                     </div>
                     <ul id="employee-list"></ul>
                 </section>
@@ -61,7 +496,7 @@
                     <div class="method-select">
                         <label>
                             <input type="radio" name="method" value="median" checked />
-                            Geometrinen mediaani (minimoi kokonaismatka)
+                            Geometrinen mediaani (minimoi matkan)
                         </label>
                         <label>
                             <input type="radio" name="method" value="centroid" />
@@ -94,6 +529,266 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="app.js"></script>
+    <script>
+(function () {
+    'use strict';
+
+    let employees = [];
+    let map, markersLayer, resultsLayer;
+
+    const form = document.getElementById('employee-form');
+    const nameInput = document.getElementById('name');
+    const addressInput = document.getElementById('address');
+    const weightInput = document.getElementById('weight');
+    const employeeList = document.getElementById('employee-list');
+    const employeeCount = document.getElementById('employee-count');
+    const calculateBtn = document.getElementById('calculate-btn');
+    const clearAllBtn = document.getElementById('clear-all-btn');
+    const importCsvBtn = document.getElementById('import-csv-btn');
+    const exportCsvBtn = document.getElementById('export-csv-btn');
+    const loadExampleBtn = document.getElementById('load-example-btn');
+    const csvFileInput = document.getElementById('csv-file-input');
+    const resultsPanel = document.getElementById('results-panel');
+    const resultsContent = document.getElementById('results-content');
+    const closeResults = document.getElementById('close-results');
+    const statusBar = document.getElementById('status-bar');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const loadingText = document.getElementById('loading-text');
+
+    function initMap() {
+        map = L.map('map').setView([61.5, 24.0], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            maxZoom: 18,
+        }).addTo(map);
+        markersLayer = L.layerGroup().addTo(map);
+        resultsLayer = L.layerGroup().addTo(map);
+    }
+
+    async function geocode(address) {
+        const query = address.match(/^\d{5}$/) ? address + ', Finland' : address;
+        const url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=1&countrycodes=fi';
+        const response = await fetch(url, { headers: { 'Accept-Language': 'fi' } });
+        if (!response.ok) throw new Error('Geokoodaus epäonnistui: ' + response.status);
+        const data = await response.json();
+        if (data.length === 0) throw new Error('Osoitetta ei löytynyt: "' + address + '"');
+        return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon), displayName: data[0].display_name };
+    }
+
+    async function geocodeWithDelay(address, delayMs) {
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+        return geocode(address);
+    }
+
+    function haversineDistance(lat1, lng1, lat2, lng2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLng = (lng2 - lng1) * Math.PI / 180;
+        const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    function weightedCentroid(points) {
+        let tw = 0, sLat = 0, sLng = 0;
+        for (const p of points) { sLat += p.lat*p.weight; sLng += p.lng*p.weight; tw += p.weight; }
+        return { lat: sLat/tw, lng: sLng/tw };
+    }
+
+    function geometricMedian(points) {
+        let cur = weightedCentroid(points);
+        for (let i = 0; i < 1000; i++) {
+            let nLat = 0, nLng = 0, den = 0;
+            for (const p of points) {
+                const d = haversineDistance(cur.lat, cur.lng, p.lat, p.lng);
+                if (d < 1e-10) continue;
+                const w = p.weight / d;
+                nLat += w * p.lat; nLng += w * p.lng; den += w;
+            }
+            if (den === 0) break;
+            const newLat = nLat/den, newLng = nLng/den;
+            if (haversineDistance(cur.lat, cur.lng, newLat, newLng) < 1e-7) { cur = {lat:newLat, lng:newLng}; break; }
+            cur = { lat: newLat, lng: newLng };
+        }
+        return cur;
+    }
+
+    function totalWeightedDistance(c, points) {
+        let t = 0;
+        for (const p of points) t += haversineDistance(c.lat, c.lng, p.lat, p.lng) * p.weight;
+        return t;
+    }
+
+    const employeeIcon = L.divIcon({ className:'', html:'<div style="background:#2563eb;width:12px;height:12px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>', iconSize:[16,16], iconAnchor:[8,8] });
+    const medianIcon = L.divIcon({ className:'', html:'<div style="background:#dc2626;width:20px;height:20px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4)"></div>', iconSize:[26,26], iconAnchor:[13,13] });
+    const centroidIcon = L.divIcon({ className:'', html:'<div style="background:#ca8a04;width:20px;height:20px;border-radius:4px;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4)"></div>', iconSize:[26,26], iconAnchor:[13,13] });
+
+    function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function setStatus(t) { statusBar.textContent = t; }
+    function showLoading(t) { loadingText.textContent = t; loadingOverlay.classList.remove('hidden'); }
+    function updateLoading(t) { loadingText.textContent = t; }
+    function hideLoading() { loadingOverlay.classList.add('hidden'); }
+
+    function addEmployee(name, address, weight, coords) {
+        const emp = { id: Date.now()+Math.random(), name, address, weight, lat:coords.lat, lng:coords.lng, displayName:coords.displayName };
+        employees.push(emp);
+        updateUI();
+        const marker = L.marker([emp.lat, emp.lng], {icon:employeeIcon}).bindPopup('<b>'+escapeHtml(emp.name)+'</b><br>'+escapeHtml(emp.address)+'<br>'+emp.weight+' pv/vko');
+        markersLayer.addLayer(marker);
+        fitMap();
+    }
+
+    function removeEmployee(id) {
+        employees = employees.filter(e => e.id !== id);
+        updateUI();
+        markersLayer.clearLayers();
+        for (const emp of employees) {
+            const m = L.marker([emp.lat,emp.lng],{icon:employeeIcon}).bindPopup('<b>'+escapeHtml(emp.name)+'</b><br>'+escapeHtml(emp.address));
+            markersLayer.addLayer(m);
+        }
+        fitMap();
+    }
+
+    function updateUI() {
+        employeeCount.textContent = employees.length;
+        calculateBtn.disabled = employees.length < 2;
+        employeeList.innerHTML = '';
+        for (const emp of employees) {
+            const li = document.createElement('li');
+            li.innerHTML = '<div class="employee-info"><div class="employee-name">'+escapeHtml(emp.name)+'</div><div class="employee-address">'+escapeHtml(emp.address)+'</div></div><span class="employee-weight">'+emp.weight+' pv/vko</span><button class="remove-btn">&times;</button>';
+            li.querySelector('.remove-btn').addEventListener('click', () => removeEmployee(emp.id));
+            employeeList.appendChild(li);
+        }
+    }
+
+    function fitMap() {
+        const all = [...markersLayer.getLayers(), ...resultsLayer.getLayers()];
+        if (all.length > 0) map.fitBounds(L.featureGroup(all).getBounds().pad(0.15));
+    }
+
+    function calculate() {
+        const method = document.querySelector('input[name="method"]:checked').value;
+        const points = employees.map(e => ({lat:e.lat, lng:e.lng, weight:e.weight}));
+        resultsLayer.clearLayers();
+        let html = '';
+
+        if (method === 'median' || method === 'both') {
+            const m = geometricMedian(points);
+            const td = totalWeightedDistance(m, points);
+            resultsLayer.addLayer(L.marker([m.lat,m.lng],{icon:medianIcon}).bindPopup('<b>Optimaalinen sijainti</b><br>Geometrinen mediaani'));
+            for (const emp of employees) resultsLayer.addLayer(L.polyline([[m.lat,m.lng],[emp.lat,emp.lng]],{color:'#2563eb',weight:1.5,opacity:0.4,dashArray:'5,5'}));
+            html += buildResult('Geometrinen mediaani','result-block',m,points,td);
+        }
+        if (method === 'centroid' || method === 'both') {
+            const c = weightedCentroid(points);
+            const td = totalWeightedDistance(c, points);
+            resultsLayer.addLayer(L.marker([c.lat,c.lng],{icon:centroidIcon}).bindPopup('<b>Painotettu keskipiste</b>'));
+            if (method==='centroid') for (const emp of employees) resultsLayer.addLayer(L.polyline([[c.lat,c.lng],[emp.lat,emp.lng]],{color:'#ca8a04',weight:1.5,opacity:0.4,dashArray:'5,5'}));
+            html += buildResult('Painotettu keskipiste','result-block centroid-result',c,points,td);
+        }
+
+        resultsContent.innerHTML = html;
+        resultsPanel.classList.remove('hidden');
+        fitMap();
+        setStatus('Laskenta valmis');
+    }
+
+    function buildResult(title, cls, center, points, totalDist) {
+        const dists = employees.map((emp,i) => ({name:emp.name, distance:haversineDistance(center.lat,center.lng,points[i].lat,points[i].lng)})).sort((a,b)=>b.distance-a.distance);
+        const avg = dists.reduce((s,d)=>s+d.distance,0)/dists.length;
+        let h = '<div class="'+cls+'"><h3>'+title+'</h3>';
+        h += '<div class="result-stat"><span class="label">Sijainti</span><span class="value">'+center.lat.toFixed(4)+', '+center.lng.toFixed(4)+'</span></div>';
+        h += '<div class="result-stat"><span class="label">Kokonaismatka (painotettu)</span><span class="value">'+totalDist.toFixed(1)+' km</span></div>';
+        h += '<div class="result-stat"><span class="label">Keskietaisyys</span><span class="value">'+avg.toFixed(1)+' km</span></div>';
+        h += '<div class="result-stat"><span class="label">Pisin etaisyys</span><span class="value">'+dists[0].distance.toFixed(1)+' km</span></div>';
+        h += '<div class="distance-list"><h4>Etaisyydet henkiloittain:</h4>';
+        for (const d of dists) h += '<div class="distance-item"><span>'+escapeHtml(d.name)+'</span><span>'+d.distance.toFixed(1)+' km</span></div>';
+        h += '</div></div>';
+        return h;
+    }
+
+    function exportCSV() {
+        if (!employees.length) { alert('Ei henkilökuntaa.'); return; }
+        let csv = 'nimi;osoite;painoarvo\n';
+        for (const e of employees) csv += e.name+';'+e.address+';'+e.weight+'\n';
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+        a.download = 'henkilokunta.csv';
+        a.click();
+    }
+
+    async function importCSV(file) {
+        const lines = (await file.text()).trim().split('\n');
+        const start = lines[0].toLowerCase().includes('nimi') ? 1 : 0;
+        const entries = [];
+        for (let i=start;i<lines.length;i++) {
+            const p = lines[i].split(';').map(s=>s.trim());
+            if (p.length>=2) entries.push({name:p[0],address:p[1],weight:parseInt(p[2])||5});
+        }
+        if (!entries.length) { alert('Ei tietoja CSV:ssä.'); return; }
+        showLoading('Geokoodataan... (0/'+entries.length+')');
+        let ok=0, fail=[];
+        for (let i=0;i<entries.length;i++) {
+            updateLoading('Geokoodataan... ('+(i+1)+'/'+entries.length+'): '+entries[i].name);
+            try { const c = await geocodeWithDelay(entries[i].address, i===0?0:1100); addEmployee(entries[i].name,entries[i].address,entries[i].weight,c); ok++; }
+            catch(e) { fail.push(entries[i].name+': '+e.message); }
+        }
+        hideLoading();
+        if (fail.length) alert('Tuotu '+ok+'/'+entries.length+'\n\nEpäonnistuneet:\n'+fail.join('\n'));
+        else setStatus(ok+' henkilöä tuotu');
+    }
+
+    async function loadExample() {
+        const data = [
+            {name:'Anna Korhonen',address:'00100 Helsinki',weight:5},
+            {name:'Mikko Virtanen',address:'02100 Espoo',weight:5},
+            {name:'Liisa Mäkinen',address:'33100 Tampere',weight:4},
+            {name:'Juha Nieminen',address:'01300 Vantaa',weight:5},
+            {name:'Sari Laine',address:'04200 Kerava',weight:3},
+            {name:'Pekka Hämäläinen',address:'15100 Lahti',weight:4},
+        ];
+        showLoading('Ladataan esimerkkiä... (0/'+data.length+')');
+        let ok=0;
+        for (let i=0;i<data.length;i++) {
+            updateLoading('Geokoodataan: '+data[i].name+' ('+(i+1)+'/'+data.length+')');
+            try { const c = await geocodeWithDelay(data[i].address, i===0?0:1100); addEmployee(data[i].name,data[i].address,data[i].weight,c); ok++; }
+            catch(e) { console.error(e); }
+        }
+        hideLoading();
+        setStatus(ok+' esimerkkihenkilöä ladattu');
+    }
+
+    // Event handlers
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const n=nameInput.value.trim(), a=addressInput.value.trim(), w=parseInt(weightInput.value)||5;
+        if (!n||!a) return;
+        calculateBtn.disabled=true;
+        setStatus('Geokoodataan: '+a+'...');
+        try {
+            const c = await geocode(a);
+            addEmployee(n,a,w,c);
+            nameInput.value=''; addressInput.value=''; weightInput.value='5'; nameInput.focus();
+            setStatus(n+' lisätty');
+        } catch(err) { alert('Virhe: '+err.message); setStatus('Epäonnistui'); }
+        calculateBtn.disabled = employees.length<2;
+    });
+
+    calculateBtn.addEventListener('click', () => { if (employees.length>=2) { setStatus('Lasketaan...'); setTimeout(calculate,50); } });
+
+    clearAllBtn.addEventListener('click', () => {
+        if (!employees.length || !confirm('Poista kaikki?')) return;
+        employees=[]; updateUI(); markersLayer.clearLayers(); resultsLayer.clearLayers(); resultsPanel.classList.add('hidden'); setStatus('Tyhjennetty');
+    });
+
+    closeResults.addEventListener('click', () => resultsPanel.classList.add('hidden'));
+    importCsvBtn.addEventListener('click', () => csvFileInput.click());
+    csvFileInput.addEventListener('change', (e) => { if(e.target.files[0]) { importCSV(e.target.files[0]); e.target.value=''; } });
+    exportCsvBtn.addEventListener('click', exportCSV);
+    loadExampleBtn.addEventListener('click', loadExample);
+
+    initMap();
+    setStatus('Valmis – lisää henkilökuntaa aloittaaksesi');
+})();
+    </script>
 </body>
 </html>
