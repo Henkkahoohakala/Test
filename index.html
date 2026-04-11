@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nordic Real Estate Advisory — Dashboard</title>
+    <style>
+        :root {
+            --primary: #1a3a4a;
+            --primary-light: #2a5a6a;
+            --accent: #c8a96e;
+            --accent-hover: #b8994e;
+            --bg: #f5f3ef;
+            --card: #ffffff;
+            --text: #2c2c2c;
+            --text-light: #6b7280;
+            --border: #e5e1db;
+            --success: #4a9e6d;
+            --warning: #d4a843;
+            --danger: #c0564b;
+            --shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+        }
+        header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        header h1 span { color: var(--accent); }
+        .header-date {
+            font-size: 0.9rem;
+            opacity: 0.85;
+        }
+
+        /* Navigation Tabs */
+        .tabs {
+            background: var(--primary-light);
+            display: flex;
+            gap: 0;
+            padding: 0 2rem;
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 0.8rem 1.5rem;
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab:hover { color: white; background: rgba(255,255,255,0.05); }
+        .tab.active {
+            color: white;
+            border-bottom-color: var(--accent);
+        }
+
+        /* Main layout */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .card h2 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent);
+            display: inline-block;
+        }
+
+        /* Grid layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            main { padding: 1rem; }
+            header { padding: 1rem; }
+            .tabs { padding: 0 1rem; }
+        }
+
+        /* KPI boxes */
+        .kpi-box {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 1.2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .kpi-box .kpi-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .kpi-box .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0.3rem 0;
+        }
+
+        /* Forms */
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-light);
+            margin-bottom: 0.3rem;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background: #fafaf8;
+            transition: border 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+        }
+        .form-group { margin-bottom: 1rem; }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 500px) {
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-secondary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-secondary:hover { background: var(--primary-light); }
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        .btn-sm { padding: 0.35rem 0.8rem; font-size: 0.8rem; }
+
+        /* Result box */
+        .result-box {
+            background: #f0f7f3;
+            border: 1px solid #c6e0d0;
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-top: 1rem;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .result-row:last-child { border-bottom: none; }
+        .result-label { color: var(--text-light); font-size: 0.9rem; }
+        .result-value { font-weight: 600; color: var(--primary); }
+        .result-highlight {
+            font-size: 1.3rem;
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        /* Pipeline table */
+        .pipeline-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+        .pipeline-table th {
+            text-align: left;
+            padding: 0.6rem 0.8rem;
+            background: var(--bg);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+            letter-spacing: 0.5px;
+        }
+        .pipeline-table td {
+            padding: 0.7rem 0.8rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        .pipeline-table tr:hover td { background: #fafaf8; }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-prospect { background: #e8f0fe; color: #1967d2; }
+        .badge-active { background: #e6f4ea; color: #1e8e3e; }
+        .badge-negotiation { background: #fef7e0; color: #b06d00; }
+        .badge-closed { background: #f1f3f4; color: #5f6368; }
+
+        /* Notes */
+        .note-item {
+            padding: 0.8rem;
+            border-left: 3px solid var(--accent);
+            margin-bottom: 0.8rem;
+            background: #fafaf8;
+            border-radius: 0 6px 6px 0;
+        }
+        .note-item .note-date {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+        .note-item .note-text {
+            margin-top: 0.3rem;
+            font-size: 0.9rem;
+        }
+        .note-item .note-actions {
+            margin-top: 0.4rem;
+            text-align: right;
+        }
+
+        /* Tech trends */
+        .trend-item {
+            padding: 1rem;
+            border-radius: 8px;
+            background: #fafaf8;
+            margin-bottom: 0.8rem;
+            border-left: 4px solid var(--primary);
+        }
+        .trend-item h3 {
+            font-size: 0.95rem;
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+        }
+        .trend-item p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+        .trend-tag {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-top: 0.4rem;
+            margin-right: 0.3rem;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1><span>Nordic</span> Real Estate Advisory</h1>
+    <div class="header-date" id="headerDate"></div>
+</header>
+
+<nav class="tabs">
+    <button class="tab active" data-page="overview">Overview</button>
+    <button class="tab" data-page="yield">Yield Calculator</button>
+    <button class="tab" data-page="mortgage">Mortgage Calculator</button>
+    <button class="tab" data-page="pipeline">Deal Pipeline</button>
+    <button class="tab" data-page="notes">Decision Log</button>
+    <button class="tab" data-page="tech">Tech & PropTech</button>
+</nav>
+
+<main>
+
+    <!-- ==================== OVERVIEW PAGE ==================== -->
+    <section class="page active" id="page-overview">
+        <div class="grid-3" style="margin-bottom:1.2rem">
+            <div class="kpi-box">
+                <div class="kpi-label">Active Deals</div>
+                <div class="kpi-value" id="kpiDeals">0</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-label">Pipeline Value</div>
+                <div class="kpi-value" id="kpiValue">0</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-label">Decisions This Month</div>
+                <div class="kpi-value" id="kpiDecisions">0</div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h2>Quick Yield Check</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Purchase Price</label>
+                        <input type="number" id="quickPrice" placeholder="e.g. 500000">
+                    </div>
+                    <div class="form-group">
+                        <label>Annual Rent Income</label>
+                        <input type="number" id="quickRent" placeholder="e.g. 30000">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="quickYield()">Calculate</button>
+                <div id="quickResult" style="margin-top:0.8rem; font-size:1.1rem; font-weight:600; color:var(--success)"></div>
+            </div>
+
+            <div class="card">
+                <h2>Recent Decisions</h2>
+                <div id="recentNotes"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Active Pipeline Summary</h2>
+            <div id="overviewPipeline"></div>
+        </div>
+    </section>
+
+    <!-- ==================== YIELD CALCULATOR ==================== -->
+    <section class="page" id="page-yield">
+        <div class="card">
+            <h2>Property Investment Analysis</h2>
+            <p style="color:var(--text-light); margin-bottom:1.2rem; font-size:0.9rem;">
+                Calculate gross yield, net yield, and cash-on-cash return for any property.
+            </p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Purchase Price (EUR)</label>
+                    <input type="number" id="yieldPrice" placeholder="500000">
+                </div>
+                <div class="form-group">
+                    <label>Annual Gross Rental Income (EUR)</label>
+                    <input type="number" id="yieldRent" placeholder="36000">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Annual Operating Costs (EUR)</label>
+                    <input type="number" id="yieldCosts" placeholder="8000" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Renovation / Capex (EUR)</label>
+                    <input type="number" id="yieldReno" placeholder="0" value="0">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Down Payment / Equity (EUR)</label>
+                    <input type="number" id="yieldEquity" placeholder="150000">
+                </div>
+                <div class="form-group">
+                    <label>Annual Loan Payments (EUR)</label>
+                    <input type="number" id="yieldLoan" placeholder="18000" value="0">
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="calcYield()">Analyze Investment</button>
+
+            <div id="yieldResult" style="display:none" class="result-box">
+                <div class="result-row">
+                    <span class="result-label">Gross Yield</span>
+                    <span class="result-value" id="resGrossYield"></span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Net Yield (after costs)</span>
+                    <span class="result-value" id="resNetYield"></span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Net Operating Income</span>
+                    <span class="result-value" id="resNOI"></span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Cash-on-Cash Return</span>
+                    <span class="result-value result-highlight" id="resCOC"></span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Total Investment</span>
+                    <span class="result-value" id="resTotalInv"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== MORTGAGE CALCULATOR ==================== -->
+    <section class="page" id="page-mortgage">
+        <div class="card">
+            <h2>Mortgage & Financing Calculator</h2>
+            <p style="color:var(--text-light); margin-bottom:1.2rem; font-size:0.9rem;">
+                Compare loan scenarios — monthly payments, total interest, and payoff timeline.
+            </p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Loan Amount (EUR)</label>
+                    <input type="number" id="loanAmount" placeholder="400000">
+                </div>
+                <div class="form-group">
+                    <label>Annual Interest Rate (%)</label>
+                    <input type="number" id="loanRate" step="0.01" placeholder="4.5">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Loan Term (years)</label>
+                    <input type="number" id="loanYears" placeholder="25" value="25">
+                </div>
+                <div class="form-group">
+                    <label>Payment Type</label>
+                    <select id="loanType">
+                        <option value="annuity">Annuity (equal payments)</option>
+                        <option value="linear">Linear (decreasing payments)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="calcMortgage()">Calculate Payments</button>
+
+            <div id="mortgageResult" style="display:none" class="result-box">
+                <div class="result-row">
+                    <span class="result-label">Monthly Payment (1st month)</span>
+                    <span class="result-value result-highlight" id="resMonthly"></span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Total Amount Paid</span>
+                    <span class="result-value" id="resTotalPaid"></span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Total Interest Paid</span>
+                    <span class="result-value" id="resTotalInterest"></span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Interest-to-Principal Ratio</span>
+                    <span class="result-value" id="resRatio"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== DEAL PIPELINE ==================== -->
+    <section class="page" id="page-pipeline">
+        <div class="card">
+            <h2>Deal Pipeline</h2>
+            <p style="color:var(--text-light); margin-bottom:1rem; font-size:0.9rem;">
+                Track your advisory mandates and deal flow. Data is saved locally in your browser.
+            </p>
+
+            <div style="margin-bottom:1rem; padding:1rem; background:#fafaf8; border-radius:8px;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Project / Deal Name</label>
+                        <input type="text" id="dealName" placeholder="e.g. Helsinki Office Tower">
+                    </div>
+                    <div class="form-group">
+                        <label>Client</label>
+                        <input type="text" id="dealClient" placeholder="e.g. Nordic Invest AB">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Estimated Value (EUR)</label>
+                        <input type="number" id="dealValue" placeholder="2000000">
+                    </div>
+                    <div class="form-group">
+                        <label>Stage</label>
+                        <select id="dealStage">
+                            <option value="prospect">Prospect</option>
+                            <option value="active">Active Mandate</option>
+                            <option value="negotiation">In Negotiation</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <input type="text" id="dealNotes" placeholder="Key details...">
+                </div>
+                <button class="btn btn-primary" onclick="addDeal()">Add Deal</button>
+            </div>
+
+            <table class="pipeline-table" id="pipelineTable">
+                <thead>
+                    <tr>
+                        <th>Deal</th>
+                        <th>Client</th>
+                        <th>Value</th>
+                        <th>Stage</th>
+                        <th>Notes</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="pipelineBody"></tbody>
+            </table>
+            <div id="pipelineEmpty" class="empty-state">No deals yet. Add your first deal above.</div>
+        </div>
+    </section>
+
+    <!-- ==================== DECISION LOG ==================== -->
+    <section class="page" id="page-notes">
+        <div class="card">
+            <h2>Decision Log</h2>
+            <p style="color:var(--text-light); margin-bottom:1rem; font-size:0.9rem;">
+                Record key decisions, insights, and action items. Your notes are saved locally.
+            </p>
+
+            <div class="form-group">
+                <label>Category</label>
+                <select id="noteCategory">
+                    <option value="decision">Strategic Decision</option>
+                    <option value="insight">Market Insight</option>
+                    <option value="action">Action Item</option>
+                    <option value="meeting">Meeting Note</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Note</label>
+                <textarea id="noteText" rows="3" placeholder="What was decided and why..."></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="addNote()">Save Entry</button>
+
+            <div id="notesList" style="margin-top:1.2rem;"></div>
+            <div id="notesEmpty" class="empty-state">No entries yet. Start logging your decisions above.</div>
+        </div>
+    </section>
+
+    <!-- ==================== TECH & PROPTECH ==================== -->
+    <section class="page" id="page-tech">
+        <div class="card">
+            <h2>Tech & PropTech Trends</h2>
+            <p style="color:var(--text-light); margin-bottom:1.2rem; font-size:0.9rem;">
+                Key technology trends shaping the Nordic real estate industry. Updated reference for staying current.
+            </p>
+
+            <div class="trend-item">
+                <h3>AI-Powered Property Valuation</h3>
+                <p>Machine learning models now analyze market data, comparable transactions, and property features to produce instant valuations. Nordic leaders like Datscha and Valueguard are applying this at scale across the Nordics.</p>
+                <span class="trend-tag">AI/ML</span>
+                <span class="trend-tag">Valuation</span>
+            </div>
+
+            <div class="trend-item">
+                <h3>Digital Twins & Building Intelligence</h3>
+                <p>3D digital replicas of buildings connected to real-time sensor data enable smarter facility management, energy optimization, and predictive maintenance. Major new Nordic developments are now born-digital.</p>
+                <span class="trend-tag">IoT</span>
+                <span class="trend-tag">Digital Twin</span>
+            </div>
+
+            <div class="trend-item">
+                <h3>ESG & Green Building Certification Tech</h3>
+                <p>EU taxonomy requirements and Nordic sustainability standards (BREEAM-NOR, Miljbyggnad) are driving demand for automated ESG reporting platforms and energy analytics integrated into property management.</p>
+                <span class="trend-tag">ESG</span>
+                <span class="trend-tag">Sustainability</span>
+            </div>
+
+            <div class="trend-item">
+                <h3>Tokenization & Fractional Ownership</h3>
+                <p>Blockchain-based real estate tokens enable fractional property investment, lowering barriers to entry. Several Nordic fintech companies are exploring regulated security token offerings for commercial property.</p>
+                <span class="trend-tag">Blockchain</span>
+                <span class="trend-tag">Fintech</span>
+            </div>
+
+            <div class="trend-item">
+                <h3>Tenant Experience Platforms</h3>
+                <p>Apps and platforms for tenant communication, space booking, community building, and service requests are becoming standard in premium office and residential properties. Improves tenant retention and NOI.</p>
+                <span class="trend-tag">SaaS</span>
+                <span class="trend-tag">Tenant</span>
+            </div>
+
+            <div class="trend-item">
+                <h3>Generative AI for Real Estate Advisory</h3>
+                <p>Large language models assist with market report drafting, lease analysis, due diligence document review, and client communication. Early adopters in Nordic advisory firms report significant productivity gains.</p>
+                <span class="trend-tag">GenAI</span>
+                <span class="trend-tag">Productivity</span>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    Nordic Real Estate Advisory Dashboard &mdash; Data stored locally in your browser
+</footer>
+
+<script>
+    // ==================== NAVIGATION ====================
+    const tabs = document.querySelectorAll('.tab');
+    const pages = document.querySelectorAll('.page');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            pages.forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById('page-' + tab.dataset.page).classList.add('active');
+        });
+    });
+
+    // ==================== DATE ====================
+    function formatDate(d) {
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        return d.toLocaleDateString('en-GB', options);
+    }
+    document.getElementById('headerDate').textContent = formatDate(new Date());
+
+    // ==================== QUICK YIELD ====================
+    function quickYield() {
+        const price = parseFloat(document.getElementById('quickPrice').value);
+        const rent = parseFloat(document.getElementById('quickRent').value);
+        if (price > 0 && rent > 0) {
+            const yld = ((rent / price) * 100).toFixed(2);
+            document.getElementById('quickResult').textContent = 'Gross Yield: ' + yld + '%';
+        }
+    }
+
+    // ==================== YIELD CALCULATOR ====================
+    function calcYield() {
+        const price = parseFloat(document.getElementById('yieldPrice').value) || 0;
+        const rent = parseFloat(document.getElementById('yieldRent').value) || 0;
+        const costs = parseFloat(document.getElementById('yieldCosts').value) || 0;
+        const reno = parseFloat(document.getElementById('yieldReno').value) || 0;
+        const equity = parseFloat(document.getElementById('yieldEquity').value) || price;
+        const loan = parseFloat(document.getElementById('yieldLoan').value) || 0;
+
+        if (price <= 0 || rent <= 0) return;
+
+        const totalInvestment = price + reno;
+        const noi = rent - costs;
+        const grossYield = (rent / totalInvestment) * 100;
+        const netYield = (noi / totalInvestment) * 100;
+        const cashFlow = noi - loan;
+        const coc = equity > 0 ? (cashFlow / equity) * 100 : 0;
+
+        document.getElementById('resGrossYield').textContent = grossYield.toFixed(2) + '%';
+        document.getElementById('resNetYield').textContent = netYield.toFixed(2) + '%';
+        document.getElementById('resNOI').textContent = formatEUR(noi) + ' / year';
+        document.getElementById('resCOC').textContent = coc.toFixed(2) + '%';
+        document.getElementById('resTotalInv').textContent = formatEUR(totalInvestment);
+        document.getElementById('yieldResult').style.display = 'block';
+    }
+
+    // ==================== MORTGAGE CALCULATOR ====================
+    function calcMortgage() {
+        const principal = parseFloat(document.getElementById('loanAmount').value) || 0;
+        const rate = parseFloat(document.getElementById('loanRate').value) || 0;
+        const years = parseInt(document.getElementById('loanYears').value) || 25;
+        const type = document.getElementById('loanType').value;
+
+        if (principal <= 0 || rate <= 0) return;
+
+        const monthlyRate = rate / 100 / 12;
+        const months = years * 12;
+        let monthlyPayment, totalPaid;
+
+        if (type === 'annuity') {
+            monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, months))
+                / (Math.pow(1 + monthlyRate, months) - 1);
+            totalPaid = monthlyPayment * months;
+        } else {
+            // Linear: first month payment (highest)
+            const principalPart = principal / months;
+            monthlyPayment = principalPart + (principal * monthlyRate);
+            // Total for linear
+            totalPaid = 0;
+            let remaining = principal;
+            for (let i = 0; i < months; i++) {
+                totalPaid += principalPart + (remaining * monthlyRate);
+                remaining -= principalPart;
+            }
+        }
+
+        const totalInterest = totalPaid - principal;
+        const ratio = (totalInterest / principal * 100).toFixed(1);
+
+        document.getElementById('resMonthly').textContent = formatEUR(monthlyPayment) + ' / mo';
+        document.getElementById('resTotalPaid').textContent = formatEUR(totalPaid);
+        document.getElementById('resTotalInterest').textContent = formatEUR(totalInterest);
+        document.getElementById('resRatio').textContent = ratio + '%';
+        document.getElementById('mortgageResult').style.display = 'block';
+    }
+
+    // ==================== DEAL PIPELINE ====================
+    function getDeals() {
+        return JSON.parse(localStorage.getItem('nrea_deals') || '[]');
+    }
+    function saveDeals(deals) {
+        localStorage.setItem('nrea_deals', JSON.stringify(deals));
+        renderDeals();
+        updateKPIs();
+    }
+
+    function addDeal() {
+        const name = document.getElementById('dealName').value.trim();
+        const client = document.getElementById('dealClient').value.trim();
+        const value = parseFloat(document.getElementById('dealValue').value) || 0;
+        const stage = document.getElementById('dealStage').value;
+        const notes = document.getElementById('dealNotes').value.trim();
+
+        if (!name) return;
+
+        const deals = getDeals();
+        deals.push({ id: Date.now(), name, client, value, stage, notes });
+        saveDeals(deals);
+
+        document.getElementById('dealName').value = '';
+        document.getElementById('dealClient').value = '';
+        document.getElementById('dealValue').value = '';
+        document.getElementById('dealNotes').value = '';
+    }
+
+    function removeDeal(id) {
+        const deals = getDeals().filter(d => d.id !== id);
+        saveDeals(deals);
+    }
+
+    function renderDeals() {
+        const deals = getDeals();
+        const body = document.getElementById('pipelineBody');
+        const empty = document.getElementById('pipelineEmpty');
+
+        if (deals.length === 0) {
+            body.innerHTML = '';
+            empty.style.display = 'block';
+            return;
+        }
+        empty.style.display = 'none';
+
+        body.innerHTML = deals.map(d => `
+            <tr>
+                <td><strong>${esc(d.name)}</strong></td>
+                <td>${esc(d.client)}</td>
+                <td>${formatEUR(d.value)}</td>
+                <td><span class="badge badge-${d.stage}">${stageLabel(d.stage)}</span></td>
+                <td>${esc(d.notes)}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="removeDeal(${d.id})">Remove</button></td>
+            </tr>
+        `).join('');
+
+        // Also render overview
+        renderOverviewPipeline(deals);
+    }
+
+    function renderOverviewPipeline(deals) {
+        const el = document.getElementById('overviewPipeline');
+        if (deals.length === 0) {
+            el.innerHTML = '<div class="empty-state">No active deals</div>';
+            return;
+        }
+        const active = deals.filter(d => d.stage !== 'closed');
+        if (active.length === 0) {
+            el.innerHTML = '<div class="empty-state">All deals closed</div>';
+            return;
+        }
+        el.innerHTML = '<table class="pipeline-table"><thead><tr><th>Deal</th><th>Client</th><th>Value</th><th>Stage</th></tr></thead><tbody>' +
+            active.map(d => `<tr><td>${esc(d.name)}</td><td>${esc(d.client)}</td><td>${formatEUR(d.value)}</td><td><span class="badge badge-${d.stage}">${stageLabel(d.stage)}</span></td></tr>`).join('') +
+            '</tbody></table>';
+    }
+
+    function stageLabel(s) {
+        return { prospect: 'Prospect', active: 'Active', negotiation: 'Negotiation', closed: 'Closed' }[s] || s;
+    }
+
+    // ==================== DECISION LOG ====================
+    function getNotes() {
+        return JSON.parse(localStorage.getItem('nrea_notes') || '[]');
+    }
+    function saveNotes(notes) {
+        localStorage.setItem('nrea_notes', JSON.stringify(notes));
+        renderNotes();
+        updateKPIs();
+    }
+
+    function addNote() {
+        const category = document.getElementById('noteCategory').value;
+        const text = document.getElementById('noteText').value.trim();
+        if (!text) return;
+
+        const notes = getNotes();
+        notes.unshift({ id: Date.now(), category, text, date: new Date().toISOString() });
+        saveNotes(notes);
+        document.getElementById('noteText').value = '';
+    }
+
+    function removeNote(id) {
+        const notes = getNotes().filter(n => n.id !== id);
+        saveNotes(notes);
+    }
+
+    function renderNotes() {
+        const notes = getNotes();
+        const list = document.getElementById('notesList');
+        const empty = document.getElementById('notesEmpty');
+
+        if (notes.length === 0) {
+            list.innerHTML = '';
+            empty.style.display = 'block';
+            return;
+        }
+        empty.style.display = 'none';
+
+        list.innerHTML = notes.map(n => `
+            <div class="note-item">
+                <div class="note-date">${categoryLabel(n.category)} &mdash; ${new Date(n.date).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })}</div>
+                <div class="note-text">${esc(n.text)}</div>
+                <div class="note-actions"><button class="btn btn-danger btn-sm" onclick="removeNote(${n.id})">Delete</button></div>
+            </div>
+        `).join('');
+
+        // Render recent on overview (max 3)
+        const recent = document.getElementById('recentNotes');
+        const latest = notes.slice(0, 3);
+        if (latest.length === 0) {
+            recent.innerHTML = '<div class="empty-state">No decisions logged yet</div>';
+        } else {
+            recent.innerHTML = latest.map(n => `
+                <div class="note-item">
+                    <div class="note-date">${categoryLabel(n.category)} &mdash; ${new Date(n.date).toLocaleDateString('en-GB', { day:'numeric', month:'short' })}</div>
+                    <div class="note-text">${esc(n.text)}</div>
+                </div>
+            `).join('');
+        }
+    }
+
+    function categoryLabel(c) {
+        return { decision: 'Decision', insight: 'Insight', action: 'Action Item', meeting: 'Meeting' }[c] || c;
+    }
+
+    // ==================== KPIs ====================
+    function updateKPIs() {
+        const deals = getDeals();
+        const notes = getNotes();
+        const active = deals.filter(d => d.stage !== 'closed');
+        const totalValue = active.reduce((sum, d) => sum + d.value, 0);
+
+        const now = new Date();
+        const thisMonth = notes.filter(n => {
+            const d = new Date(n.date);
+            return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        });
+
+        document.getElementById('kpiDeals').textContent = active.length;
+        document.getElementById('kpiValue').textContent = formatEURShort(totalValue);
+        document.getElementById('kpiDecisions').textContent = thisMonth.length;
+    }
+
+    // ==================== HELPERS ====================
+    function formatEUR(n) {
+        return new Intl.NumberFormat('fi-FI', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
+    }
+    function formatEURShort(n) {
+        if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+        if (n >= 1000) return (n / 1000).toFixed(0) + 'k';
+        return n.toString();
+    }
+    function esc(str) {
+        const d = document.createElement('div');
+        d.textContent = str || '';
+        return d.innerHTML;
+    }
+
+    // ==================== INIT ====================
+    renderDeals();
+    renderNotes();
+    updateKPIs();
+</script>
+
+</body>
+</html>
