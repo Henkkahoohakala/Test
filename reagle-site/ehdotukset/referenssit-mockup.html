@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MOCKUP – Referenssit – Reagle</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  /* --- Mockup-only additions (ehdotus uusiksi komponenteiksi) --- */
+  .mock-banner { background: #fff3cd; color: #5c4400; text-align: center; font-size: .85rem; padding: .5rem 1rem; position: relative; z-index: 200; }
+  .site-header { position: sticky; background: rgba(255,255,255,.96); color: var(--navy); box-shadow: 0 1px 0 var(--line); }
+  .page-hero { padding-top: 5rem; }
+  .ph { background: #fff3cd; color: #7a5a00; padding: 0 .3em; border-radius: 4px; font-size: .85em; font-style: normal; white-space: nowrap; }
+
+  .track { padding: 0; margin-top: -3rem; position: relative; z-index: 2; }
+  .track .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .track .note { font-size: .78rem; color: var(--muted); margin-top: .8rem; }
+
+  .featured { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6rem; }
+  .featured .ref-card .kpi { display: block; font-family: var(--font-head); font-weight: 800; font-size: 2.4rem; color: var(--gold-light); line-height: 1; margin-top: 1rem; }
+  .featured .ref-card .kpi small { display: block; font-family: var(--font-body); font-weight: 500; font-size: .85rem; color: rgba(255,255,255,.85); margin-top: .3rem; }
+
+  .tomb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+  .tomb { border: 1px solid var(--line); border-radius: var(--radius); padding: 1.5rem 1.5rem 1.2rem; background: var(--white); display: flex; flex-direction: column; transition: border-color .2s, box-shadow .2s; }
+  .tomb:hover { border-color: var(--gold-light); box-shadow: var(--shadow); }
+  .tomb[hidden] { display: none; }
+  .tomb .meta { font-size: .7rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
+  .tomb h3 { font-size: 1.2rem; color: var(--navy); margin: .6rem 0 .3rem; }
+  .tomb .size { font-weight: 600; color: var(--ink); font-size: .92rem; margin-bottom: .9rem; }
+  .tomb dl { display: grid; grid-template-columns: auto 1fr; gap: .2rem .8rem; margin: 0 0 1rem; font-size: .85rem; flex: 1; }
+  .tomb dt { color: var(--muted); }
+  .tomb dd { margin: 0; }
+  .tomb .conf { color: var(--muted); font-style: italic; }
+  .tomb .link-arrow { font-size: .88rem; align-self: flex-end; }
+
+  .cs-head { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; align-items: end; }
+  .facts { display: grid; grid-template-columns: repeat(5, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 2.5rem 0; }
+  .facts div { padding: 1rem 1rem 1rem 0; font-size: .88rem; }
+  .facts span { display: block; font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+  .kpis div { background: var(--navy); color: var(--white); border-radius: var(--radius); padding: 1.6rem; }
+  .kpis strong { display: block; font-family: var(--font-head); font-size: 2.6rem; color: var(--gold-light); line-height: 1; }
+  .kpis span { font-size: .88rem; opacity: .85; }
+  .htr { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 3rem; }
+  .htr h3 { color: var(--navy); font-size: 1.15rem; display: flex; gap: .6rem; align-items: baseline; }
+  .htr h3 b { color: var(--gold); font-size: .9rem; }
+  .htr p, .htr li { color: var(--muted); font-size: .95rem; }
+  .htr ul { padding-left: 1.1rem; margin: 0; }
+  .quote { margin: 3rem 0 0; padding: 2rem 2.4rem; border-left: 3px solid var(--gold); background: var(--white); border-radius: 0 var(--radius) var(--radius) 0; font-size: 1.15rem; font-style: italic; }
+  .quote footer { font-style: normal; font-size: .9rem; color: var(--muted); margin-top: 1rem; }
+
+  .logos { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1.6rem 2rem; align-items: center; }
+  .logos img { max-height: 46px; width: auto; margin: auto; filter: grayscale(1); opacity: .7; transition: filter .2s, opacity .2s; }
+  .logos img:hover { filter: none; opacity: 1; }
+
+  @media (max-width: 960px) {
+    .track .stats-grid, .facts { grid-template-columns: repeat(2, 1fr); }
+    .featured, .tomb-grid, .htr, .kpis, .cs-head { grid-template-columns: 1fr; }
+    .logos { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="mock-banner">MOCKUP / ehdotus – ei tuotantosivu. Keltaiset kohdat = <strong>[TÄYDENNÄ]</strong>-tiedot, jotka osakkaiden pitää toimittaa.</div>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt=""><span>REAGLE</span></a>
+    <nav class="main-nav" aria-label="Päävalikko"><ul>
+      <li><a href="../index.html">Etusivu</a></li><li><a href="../yritys.html">Yritys</a></li>
+      <li><a href="../palvelut.html">Palvelut</a></li><li><a href="../referenssit.html" aria-current="page">Referenssit</a></li>
+      <li><a class="nav-cta" href="../ota-yhteytta.html">Ota yhteyttä</a></li></ul></nav>
+  </div>
+</header>
+
+<main>
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Referenssit</span>
+    <h1>Tuloksia, ei lupauksia.</h1>
+    <p class="lead">Transaktioita, arvonluontia, dataa ja toimitilaratkaisuja – pörssiyhtiöille, kiinteistörahastoille, sijoittajille ja julkiselle sektorille vuodesta 2017.</p>
+  </div>
+</section>
+
+<!-- A. Track record -lukurivi -->
+<section class="track">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat"><strong><em class="ph">[TÄYDENNÄ]</em></strong><span>toteutettua kiinteistökauppaa vuodesta 2017</span></div>
+      <div class="stat"><strong><em class="ph">[TÄYDENNÄ] M€</em></strong><span>neuvottu transaktiovolyymi</span></div>
+      <div class="stat"><strong>6 000+</strong><span>kiinteistökauppaa analysoitu Tilastokeskuksen indeksityöhön</span></div>
+      <div class="stat"><strong>3</strong><span>maata: Suomi, Ruotsi, Tanska</span></div>
+    </div>
+    <p class="note">Luvut sisältävät myös luottamuksellisia toimeksiantoja.</p>
+  </div>
+</section>
+
+<!-- B. Nostetut caset -->
+<section>
+  <div class="container">
+    <div class="section-head"><div><span class="eyebrow">Valitut case-esittelyt</span><h2>Miten sen teimme.</h2></div></div>
+    <div class="featured">
+      <a class="ref-card" href="#case-ruokakaupat">
+        <img src="https://reagle.fi/wp-content/webp-express/webp-images/uploads/2021/06/k-market.jpg.webp" alt="Päivittäistavarakauppa" loading="lazy">
+        <div class="body"><span class="tag">Transaktiot · Ostajan neuvonantaja</span><h3>13 ruokakauppaa vakaan kassavirran salkkuun</h3>
+          <span class="kpi">13<small>kohdetta hankittu · keskim. ~2 kk / kohde</small></span></div>
+      </a>
+      <a class="ref-card" href="#t-hoivatilat">
+        <img src="https://reagle.fi/wp-content/webp-express/webp-images/uploads/2021/06/Paivakoti-Myotatuuli-1-e1636615432945.jpg.webp" alt="Päiväkotikiinteistö" loading="lazy">
+        <div class="body"><span class="tag">Transaktiot · Myyjän neuvonantaja</span><h3>Hoivatilat Oyj:n hoivaportfolion divestointi</h3>
+          <span class="kpi">12+ v<small>WAULT · 6 kohdetta · ostaja eQ Hoivakiinteistöt</small></span></div>
+      </a>
+      <a class="ref-card" href="#t-tilastokeskus">
+        <img src="https://reagle.fi/wp-content/webp-express/webp-images/uploads/2021/06/ss-scaled-e1636615454980.jpg.webp" alt="" loading="lazy">
+        <div class="body"><span class="tag">Intelligence · Data</span><h3>Tilastokeskus: aineisto EKP:n kiinteistöindeksiin</h3>
+          <span class="kpi">6 000+<small>transaktiota 2015–2024, geokoodattu</small></span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- C. Kaikki toimeksiannot (tombstonet) -->
+<section class="section-cream" id="kaikki">
+  <div class="container">
+    <div class="section-head"><div><span class="eyebrow">Kaikki toimeksiannot</span><h2>Valikoituja toimeksiantoja.</h2></div></div>
+    <div class="filters" role="group" aria-label="Suodata palvelun mukaan">
+      <button type="button" data-filter="all" aria-pressed="true">Kaikki</button>
+      <button type="button" data-filter="Transaktiot" aria-pressed="false">Transaktiot</button>
+      <button type="button" data-filter="Arvonluonti" aria-pressed="false">Arvonluonti</button>
+      <button type="button" data-filter="Intelligence" aria-pressed="false">Intelligence</button>
+      <button type="button" data-filter="Corporate Real Estate" aria-pressed="false">Corporate Real Estate</button>
+    </div>
+    <div class="tomb-grid">
+
+      <article class="tomb" id="t-ruokakaupat" data-cat="Transaktiot Intelligence">
+        <span class="meta">Transaktiot · Ostajan neuvonantaja</span>
+        <h3>Ruokakauppakiinteistöt, eri puolilla Suomea</h3>
+        <div class="size">13 kohdetta · 400–500 seulottu</div>
+        <dl><dt>Asiakas</dt><dd>Elite Alfred Berg / Elite Kiinteistökehitysrahasto II</dd>
+            <dt>Volyymi</dt><dd><em class="ph">[TÄYDENNÄ]</em></dd>
+            <dt>Vuosi</dt><dd><em class="ph">[TÄYDENNÄ]</em></dd></dl>
+        <a class="link-arrow" href="#case-ruokakaupat">Lue case →</a>
+      </article>
+
+      <article class="tomb" id="t-hoivatilat" data-cat="Transaktiot">
+        <span class="meta">Transaktiot · Myyjän neuvonantaja</span>
+        <h3>Hoivaportfolio, pääosin Etelä-Suomi</h3>
+        <div class="size">6 kohdetta · WAULT hieman yli 12 v</div>
+        <dl><dt>Asiakas</dt><dd>Hoivatilat Oyj</dd>
+            <dt>Ostaja</dt><dd>Erikoissijoitusrahasto eQ Hoivakiinteistöt</dd>
+            <dt>Hinta</dt><dd class="conf">Luottamuksellinen</dd>
+            <dt>Vuosi</dt><dd><em class="ph">[TÄYDENNÄ]</em></dd></dl>
+        <a class="link-arrow" href="#">Lue case →</a>
+      </article>
+
+      <article class="tomb" id="t-konala" data-cat="Transaktiot">
+        <span class="meta">Transaktiot · Myyjän neuvonantaja</span>
+        <h3>Monitoimikiinteistö, Helsinki Konala</h3>
+        <div class="size">~15 000 m² · ~50 vuokralaista</div>
+        <dl><dt>Asiakas</dt><dd>Elite Alfred Berg (Elite Kiinteistökehitysrahasto I KY)</dd>
+            <dt>Ostaja</dt><dd>Julius Tallberg-Kiinteistöt Oyj</dd>
+            <dt>Vuosi</dt><dd><em class="ph">[TÄYDENNÄ]</em></dd></dl>
+        <a class="link-arrow" href="#">Lue lisää →</a>
+      </article>
+
+      <article class="tomb" id="t-hereditas" data-cat="Transaktiot">
+        <span class="meta">Transaktiot · Myyjän neuvonantaja</span>
+        <h3>Arvorakennus, Helsingin keskusta</h3>
+        <div class="size">Diskreetti strukturoitu myynti</div>
+        <dl><dt>Asiakas</dt><dd>Hereditas</dd>
+            <dt>Ostaja</dt><dd>Kotimainen pörssilistattu kiinteistösijoitusyhtiö</dd>
+            <dt>Hinta</dt><dd class="conf">Luottamuksellinen</dd>
+            <dt>Vuosi</dt><dd>2019 <em class="ph">[TARKISTA]</em></dd></dl>
+        <a class="link-arrow" href="#">Lue lisää →</a>
+      </article>
+
+      <article class="tomb" id="t-boreo" data-cat="Corporate Real Estate Transaktiot">
+        <span class="meta">Corporate Real Estate · Strateginen neuvonantaja</span>
+        <h3>Toimitilojen konsolidointi ja pääkonttorin myynti, Espoo/Vantaa</h3>
+        <div class="size">~6 kk kokonaiskesto</div>
+        <dl><dt>Asiakas</dt><dd>Boreo Oyj (ent. Yleiselektroniikka Oyj)</dd>
+            <dt>Ostaja</dt><dd><em class="ph">[TÄYDENNÄ]</em></dd>
+            <dt>Vuosi</dt><dd>2020–2021</dd></dl>
+        <a class="link-arrow" href="#">Lue case →</a>
+      </article>
+
+      <article class="tomb" id="t-metroauto" data-cat="Corporate Real Estate Intelligence">
+        <span class="meta">Corporate Real Estate · Ostajan neuvonantaja</span>
+        <h3>Autokaupan liikepaikka, Itä-Helsinki</h3>
+        <div class="size">112 → ~20 → 3 → 1 kohde hankittu</div>
+        <dl><dt>Asiakas</dt><dd>Metroauto</dd>
+            <dt>Koko</dt><dd><em class="ph">[TÄYDENNÄ: tontti m²]</em></dd>
+            <dt>Vuosi</dt><dd><em class="ph">[TÄYDENNÄ]</em></dd></dl>
+        <a class="link-arrow" href="#">Lue lisää →</a>
+      </article>
+
+      <article class="tomb" id="t-tilastokeskus" data-cat="Intelligence">
+        <span class="meta">Intelligence · Data- ja analyysikumppani</span>
+        <h3>Kaupallisten kiinteistöjen hintaindeksin aineisto (EKP)</h3>
+        <div class="size">6 000+ transaktiota · 2015–2024</div>
+        <dl><dt>Asiakas</dt><dd>Tilastokeskus</dd>
+            <dt>Vuosi</dt><dd><em class="ph">[TÄYDENNÄ]</em></dd></dl>
+        <a class="link-arrow" href="#">Lue case →</a>
+      </article>
+
+      <article class="tomb" id="t-brunswick" data-cat="Intelligence">
+        <span class="meta">Intelligence · Strateginen neuvonantaja</span>
+        <h3>Salkun liiketoimintasuunnitelma ja exit-strategia</h3>
+        <div class="size">~50 kohdetta analysoitu ja arvotettu</div>
+        <dl><dt>Asiakas</dt><dd>Brunswick Real Estate</dd>
+            <dt>Vuosi</dt><dd>2020</dd></dl>
+        <a class="link-arrow" href="#">Lue lisää →</a>
+      </article>
+
+      <article class="tomb" id="t-weststar" data-cat="Arvonluonti">
+        <span class="meta">Arvonluonti · Vuokranantajan neuvonantaja</span>
+        <h3>Huoltamokiinteistöstä autoliikkeeksi, Lahti</h3>
+        <div class="size">Vuokraus + kaavan poikkeamismenettely</div>
+        <dl><dt>Asiakas</dt><dd>WestStar Oy</dd>
+            <dt>Vuokralainen</dt><dd>Rinta-Joupin Autoliike</dd>
+            <dt>Vuosi</dt><dd><em class="ph">[TÄYDENNÄ]</em></dd></dl>
+        <a class="link-arrow" href="#">Lue lisää →</a>
+      </article>
+
+      <article class="tomb" data-cat="Transaktiot">
+        <span class="meta">Transaktiot · Myyjän neuvonantaja</span>
+        <h3>Esimerkki anonymisoidusta kortista</h3>
+        <div class="size"><em class="ph">[TÄYDENNÄ: 5 000–15 000 m²]</em></div>
+        <dl><dt>Asiakas</dt><dd>Pohjoismainen kiinteistörahasto</dd>
+            <dt>Kohde</dt><dd>Logistiikka, pääkaupunkiseutu</dd>
+            <dt>Hinta</dt><dd class="conf">Luottamuksellinen</dd>
+            <dt>Vuosi</dt><dd><em class="ph">[TÄYDENNÄ]</em></dd></dl>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- Case-esittely (esimerkki; tuotannossa oma alasivu) -->
+<section id="case-ruokakaupat">
+  <div class="container">
+    <div class="cs-head">
+      <div>
+        <span class="eyebrow">Transaktiot · Ostajan neuvonantaja · <em class="ph">[VUOSI]</em></span>
+        <h2>13 ruokakauppaa vakaan kassavirran salkkuun.</h2>
+      </div>
+      <p class="lead" style="margin:0">Kartoitimme koko Suomen pienet ja keskisuuret ruokakaupat ja hankimme Elite Kiinteistökehitysrahasto II:lle 13 kohdetta – avaimet käteen.</p>
+    </div>
+    <div class="facts">
+      <div><span>Asiakas</span>Elite Alfred Berg</div>
+      <div><span>Kohde</span>Päivittäistavarakauppakiinteistöt</div>
+      <div><span>Sijainti</span>Eri puolilla Suomea</div>
+      <div><span>Volyymi</span><em class="ph">[TÄYDENNÄ]</em></div>
+      <div><span>Vuosi</span><em class="ph">[TÄYDENNÄ]</em></div>
+    </div>
+    <div class="kpis">
+      <div><strong>13</strong><span>ruokakauppaa hankittu</span></div>
+      <div><strong>400–500</strong><span>potentiaalista kohdetta seulottu ja priorisoitu</span></div>
+      <div><strong>~2 kk</strong><span>keskimääräinen läpivientiaika kohdetta kohden</span></div>
+    </div>
+    <div class="htr">
+      <div><h3><b>01</b> Haaste</h3><p>Elite Alfred Berg halusi lisätä vakaan kassavirran kohteiden painoa Elite Kiinteistökehitysrahasto II:ssa. Päivittäistavarakauppa valittiin segmentiksi, koska Suomessa on paljon ruokakauppakiinteistöjä Keskon, S-ryhmän ja instituutioiden omistuksen ulkopuolella – mutta ne piti ensin löytää.</p></div>
+      <div><h3><b>02</b> Ratkaisu</h3><ul>
+        <li>Kaikki Suomen pienet ja keskisuuret ruokakaupat kartoitettiin; suuromistajien kohteet poistettiin.</li>
+        <li>400–500 kohdetta priorisoitiin sijainnin, väestönkasvun ja muiden kriteerien perusteella.</li>
+        <li>Omistajien kontaktointi, ostoneuvottelut ja due diligence avaimet käteen.</li></ul></div>
+      <div><h3><b>03</b> Tulos</h3><p>Elitelle on hankittu 13 eri kokoluokan ruokakauppaa ympäri Suomen keskimäärin vain parin kuukauden läpivientiajalla kohdetta kohden.</p></div>
+    </div>
+    <blockquote class="quote">”Reagle on ollut meille kaikin puolin sopiva kumppani ja luotettava toimija neuvonantajana. Arvostamme Reaglen innovatiivista lähestymiskulmaa ja positiivista puurtamista käytännön askareiden toteuttamisessa.”
+      <footer>— Antti Hänninen, <em class="ph">[TITTELI]</em>, Elite Alfred Berg</footer></blockquote>
+    <p style="margin-top:2rem"><a class="link-arrow" href="../palvelut.html#transaktiot">Palvelu: Transaktiot →</a> &nbsp;·&nbsp; <a class="link-arrow" href="../palvelut.html#intelligence">Intelligence →</a></p>
+  </div>
+</section>
+
+<!-- D. Logot -->
+<section class="section-cream">
+  <div class="container">
+    <div class="section-head"><div><span class="eyebrow">Asiakkaitamme</span><h2>Luottamus syntyy tekemällä.</h2></div><p class="lead" style="margin:0"><em class="ph">[TARKISTA logojen käyttöluvat]</em></p></div>
+    <div class="logos">
+      <img src="https://reagle.fi/wp-content/uploads/2021/06/Varma-1-300x128.png" alt="Varma" loading="lazy">
+      <img src="https://reagle.fi/wp-content/uploads/2021/06/Ilmarinen-300x128.png" alt="Ilmarinen" loading="lazy">
+      <img src="https://reagle.fi/wp-content/uploads/2021/06/elo2-1-300x164.png" alt="Elo" loading="lazy">
+      <img src="https://reagle.fi/wp-content/uploads/2021/06/Patrizia-1-300x165.jpg" alt="Patrizia" loading="lazy">
+      <img src="https://reagle.fi/wp-content/uploads/2021/06/Nrep.jpg" alt="NREP" loading="lazy">
+      <img src="https://reagle.fi/wp-content/uploads/2021/06/sponda-logo-1.png" alt="Sponda" loading="lazy">
+      <img src="https://reagle.fi/wp-content/uploads/2021/06/YIT-1-300x173.png" alt="YIT" loading="lazy">
+      <img src="https://reagle.fi/wp-content/uploads/2021/06/Elite-1-300x128.png" alt="Elite Alfred Berg" loading="lazy">
+      <img src="https://reagle.fi/wp-content/uploads/2021/06/Hoiva-tilat.png" alt="Hoivatilat" loading="lazy">
+      <img src="https://reagle.fi/wp-content/uploads/2021/06/Boreo-1.png" alt="Boreo" loading="lazy">
+      <img src="https://reagle.fi/wp-content/uploads/2021/06/Brunswick-1-300x128.jpg" alt="Brunswick Real Estate" loading="lazy">
+      <img src="https://reagle.fi/wp-content/uploads/2021/06/Hereditas-300x128.jpg" alt="Hereditas" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="cta">
+      <div><span class="eyebrow">Seuraava referenssi?</span><h2>Onko sinulla vastaava tilanne?</h2>
+        <p>Kerro kohteestasi tai tarpeestasi – osakkaamme palaavat asiaan nopeasti.</p></div>
+      <div class="actions"><a class="btn btn-gold" href="../ota-yhteytta.html">Ota yhteyttä →</a></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+  (function () {
+    var btns = document.querySelectorAll(".filters button");
+    var cards = document.querySelectorAll(".tomb");
+    function apply(f) {
+      btns.forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.filter === f ? "true" : "false"); });
+      cards.forEach(function (c) { c.hidden = f !== "all" && c.dataset.cat.indexOf(f) === -1; });
+    }
+    btns.forEach(function (b) { b.addEventListener("click", function () {
+      apply(b.dataset.filter);
+      var u = new URL(location); if (b.dataset.filter === "all") u.searchParams.delete("palvelu"); else u.searchParams.set("palvelu", b.dataset.filter);
+      history.replaceState(null, "", u);
+    }); });
+    var p = new URLSearchParams(location.search).get("palvelu"); if (p) apply(p);
+  })();
+</script>
+</body>
+</html>
